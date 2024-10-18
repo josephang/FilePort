@@ -1,0 +1,7 @@
+{
+    "directories": [
+        "/service",
+        "/usr",
+        "/home"
+    ]
+}

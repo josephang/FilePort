@@ -1,0 +1,7 @@
+{
+    "server_name": "ServerName",
+    "backup_folder": "/FilePort/RunWay",
+    "log_folder": "/FilePort/Hangar/Logs",
+    "backup_keep_days": 2,
+    "log_keep_days": 1096
+}
