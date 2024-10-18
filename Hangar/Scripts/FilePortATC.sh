@@ -6,9 +6,9 @@ CONFIG_DIR="/FilePort/Hangar/Configs"
 
 # Function to display usage
 usage() {
-    echo "Usage: $0 [-a] [-c directories_config1.json,directories_config2.json,...]"
-    echo "  -a  Process all directories JSON configuration files in the configs folder"
-    echo "  -c  Process specified directories JSON configuration files (comma-separated)"
+    echo "Usage: $0 [-a] [-c config1.json,config2.json,...]"
+    echo "  -a  Process all JSON configuration files in the configs folder"
+    echo "  -c  Process specified JSON configuration files (comma-separated)"
     exit 1
 }
 
@@ -42,10 +42,15 @@ fi
 
 # Loop through each configuration file and call the scripts
 for CONFIG_FILE in "${CONFIG_FILES[@]}"; do
-    echo "Processing configuration: $CONFIG_FILE"
+    FULL_PATH="$CONFIG_DIR/$CONFIG_FILE"
+    if [ ! -f "$FULL_PATH" ]; then
+        echo "Directories configuration file not found: $FULL_PATH"
+        continue
+    fi
+    echo "Processing configuration: $FULL_PATH"
     
     # Call the compression script
-    "$SCRIPT_DIR/FilePortCompress.sh" "$CONFIG_FILE"
+    "$SCRIPT_DIR/FilePortCompress.sh" "$FULL_PATH"
 done
 
 echo "All configurations processed."

@@ -127,7 +127,7 @@ This script calls the driver script with the default_directories.json configurat
 #!/bin/bash
 
 # Call the driver script with the default directories JSON configuration file
-/FilePort/Hangar/Configs/FilePortATC.sh -c default_directories.json
+/FilePort/Hangar/Scripts/FilePortATC.sh -c default_directories.json
 
 Notes
 

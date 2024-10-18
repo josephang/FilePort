@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Check if jq is installed
+if ! command -v jq &> /dev/null
+then
+    echo "jq could not be found. Please install jq to proceed."
+    exit 1
+fi
+
 # Check if a directories configuration file is provided as a command-line argument
 if [ "$#" -ne 1 ]; then
     echo "Usage: $0 <directories_config_file.json>"
@@ -25,10 +32,11 @@ fi
 SERVER_NAME=$(jq -r '.server_name' "$MAIN_CONFIG_FILE")
 BACKUP_FOLDER=$(jq -r '.backup_folder' "$MAIN_CONFIG_FILE")
 LOG_FOLDER=$(jq -r '.log_folder' "$MAIN_CONFIG_FILE")
-BACKUP_KEEP_DAYS=$(jq -r '.backup_keep_days' "$MAIN_CONFIG_FILE")
+LOG_FILE_NAME=$(jq -r '.log_file_name' "$MAIN_CONFIG_FILE")
 LOG_KEEP_DAYS=$(jq -r '.log_keep_days' "$MAIN_CONFIG_FILE")
 
 # Read the directories configuration file
+BACKUP_FILE_NAME=$(jq -r '.backup_file_name' "$DIRECTORIES_CONFIG_FILE")
 DIRECTORIES=($(jq -r '.directories[]' "$DIRECTORIES_CONFIG_FILE"))
 
 # Create backup and log folders if they don't exist
@@ -39,13 +47,12 @@ mkdir -p "$LOG_FOLDER"
 LOG_FILE="$LOG_FOLDER/compression_${SERVER_NAME}_$(date +'%Y%m%d_%H%M%S').log"
 
 # Start logging
-echo "Compression started at $(date +'%Y-%m-%d %H:%M:%S') on $SERVER_NAME" | tee -a "$LOG_FILE"
+echo "Compression started at $(date +'%Y-%m-%d %H:%M:%S') on $SERVER_NAME" | tee "$LOG_FILE"
 
 # Compress each directory with maximum compression using xz
 for DIR in "${DIRECTORIES[@]}"; do
     BASENAME=$(basename "$DIR")
-    DATE_STR=$(date +'%Y%m%d')
-    COMPRESSED_FILE="$BACKUP_FOLDER/${BASENAME}_${SERVER_NAME}_${DATE_STR}.tar.xz"
+    COMPRESSED_FILE="$BACKUP_FOLDER/${BACKUP_FILE_NAME}.tar.xz"
     echo "Compressing $DIR to $COMPRESSED_FILE" | tee -a "$LOG_FILE"
     
     # Run the tar command to compress the directory
@@ -57,7 +64,7 @@ for DIR in "${DIRECTORIES[@]}"; do
 done
 
 # Call the cleanup script
-"$SCRIPT_DIR/FilePortCleanUp.sh" "$MAIN_CONFIG_FILE" "$LOG_FILE"
+/FilePort/Hangar/Scripts/FilePortCleanUp.sh "$MAIN_CONFIG_FILE" "$LOG_FILE"
 
 # End logging
 echo "Compression completed at $(date +'%Y-%m-%d %H:%M:%S') on $SERVER_NAME" | tee -a "$LOG_FILE"

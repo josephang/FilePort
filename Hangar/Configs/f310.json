@@ -1,0 +1,10 @@
+{
+    "backup_file_name": "ProgramFlight",
+    "directories": [
+        "/usr",
+        "/etc",
+        "/var",
+        "/opt",
+        "/srv"
+    ]
+}
