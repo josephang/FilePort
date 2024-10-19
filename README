@@ -46,11 +46,11 @@ Directories Configuration File
 The directories JSON configuration file should include the following fields:
 
 {
-    "backup_file_name": "DefaultName",
+    "backup_file_name": "BackupFileName",
     "directories": [
-        "/service/Nimbus/california/System",
-        "/service/Nimbus/california/Games",
-        "/service/Nimbus/california/Foundry"
+        "/Path/To/Backup/Target_0",
+        "/Path/To/Backup/Target_1",
+        "/Path/To/Backup/Target_2"
     ]
 }
 
@@ -95,14 +95,14 @@ Main Configuration File (main_config.json)
     "log_keep_days": 1096
 }
 
-Directories Configuration File (directories_config1.json)
+Directories Configuration File (directories_config.json)
 
 {
-    "backup_file_name": "DefaultName",
+    "backup_file_name": "BackupFileName",
     "directories": [
-        "/service/Nimbus/california/System",
-        "/service/Nimbus/california/Games",
-        "/service/Nimbus/california/Foundry"
+        "/Path/To/Backup/Target_0",
+        "/Path/To/Backup/Target_1",
+        "/Path/To/Backup/Target_2"
     ]
 }
 
@@ -116,6 +116,9 @@ This script calls the driver script with the default_directories.json configurat
 
 # Call the driver script with the default directories JSON configuration file
 /FilePort/Hangar/Configs/FilePortATC.sh -c default_directories.json
+
+#More Options
+#/FilePort/Hangar/Scripts/FilePortATC.sh -c default_directories.json,default_directories2.json
 
 Notes
 
