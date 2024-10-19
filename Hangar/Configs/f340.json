@@ -1,6 +1,6 @@
 {
     "backup_file_name": "CryoFlight",
     "directories": [
-        "/Path/To/Your/Long/Term/Backups"
+        "/storage/LosAngeles/Backups"
     ]
 }

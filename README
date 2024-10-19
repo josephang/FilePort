@@ -31,32 +31,30 @@ The main JSON configuration file (main_config.json) should include the following
     "server_name": "ServerName",
     "backup_folder": "/FilePort/RunWay",
     "log_folder": "/FilePort/Hangar/Logs",
-    "backup_keep_days": 2,
-    "log_keep_days": 30
+    "log_file_name": "DefaultName.log",
+    "log_keep_days": 1096
 }
 
 - server_name: The name of the server.
 - backup_folder: The directory where compressed files will be stored.
 - log_folder: The directory where log files will be stored.
-- backup_keep_days: The number of days to keep backup files.
+- log_file_name: The name of the log file.
 - log_keep_days: The number of days to keep log files.
 
 Directories Configuration File
 
-The directories JSON configuration file should include the following field:
+The directories JSON configuration file should include the following fields:
 
 {
+    "backup_file_name": "DefaultName",
     "directories": [
-        "/service",
-        "/usr",
-        "/home",
-        "/etc",
-        "/var",
-        "/opt",
-        "/srv"
+        "/service/Nimbus/california/System",
+        "/service/Nimbus/california/Games",
+        "/service/Nimbus/california/Foundry"
     ]
 }
 
+- backup_file_name: The name of the backup file (prepended with server_name).
 - directories: A list of directories to be compressed.
 
 Scripts
@@ -71,7 +69,7 @@ Usage
 
 FilePortCleanUp.sh
 
-This script cleans up old backup and log files based on the retention periods specified in the main JSON configuration file.
+This script cleans up old log files based on the retention period specified in the main JSON configuration file.
 
 Usage
 
@@ -93,28 +91,18 @@ Main Configuration File (main_config.json)
     "server_name": "ServerName",
     "backup_folder": "/FilePort/RunWay",
     "log_folder": "/FilePort/Hangar/Logs",
-    "backup_keep_days": 2,
-    "log_keep_days": 30
+    "log_file_name": "DefaultName.log",
+    "log_keep_days": 1096
 }
 
 Directories Configuration File (directories_config1.json)
 
 {
+    "backup_file_name": "DefaultName",
     "directories": [
-        "/service",
-        "/usr",
-        "/home"
-    ]
-}
-
-Directories Configuration File (directories_config2.json)
-
-{
-    "directories": [
-        "/etc",
-        "/var",
-        "/opt",
-        "/srv"
+        "/service/Nimbus/california/System",
+        "/service/Nimbus/california/Games",
+        "/service/Nimbus/california/Foundry"
     ]
 }
 
@@ -127,7 +115,7 @@ This script calls the driver script with the default_directories.json configurat
 #!/bin/bash
 
 # Call the driver script with the default directories JSON configuration file
-/FilePort/Hangar/Scripts/FilePortATC.sh -c default_directories.json
+/FilePort/Hangar/Configs/FilePortATC.sh -c default_directories.json
 
 Notes
 
