@@ -1,7 +1,6 @@
 {
     "backup_file_name": "FilePortBackup",
     "directories": [
-        "/service",
         "/usr",
         "/home"
     ]
