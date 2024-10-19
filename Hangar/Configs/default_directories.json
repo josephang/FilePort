@@ -3,5 +3,8 @@
     "directories": [
         "/usr",
         "/home"
+    ],
+    "exclude": [
+        "/home/temp"
     ]
 }

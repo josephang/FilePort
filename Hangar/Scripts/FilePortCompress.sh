@@ -38,6 +38,7 @@ LOG_KEEP_DAYS=$(jq -r '.log_keep_days' "$MAIN_CONFIG_FILE")
 # Read the directories configuration file
 BACKUP_FILE_NAME=$(jq -r '.backup_file_name' "$DIRECTORIES_CONFIG_FILE")
 DIRECTORIES=($(jq -r '.directories[]' "$DIRECTORIES_CONFIG_FILE"))
+EXCLUDE=($(jq -r '.exclude[]' "$DIRECTORIES_CONFIG_FILE"))
 
 # Create backup and log folders if they don't exist
 mkdir -p "$BACKUP_FOLDER"
@@ -49,14 +50,23 @@ LOG_FILE="$LOG_FOLDER/${LOG_FILE_NAME}_${SERVER_NAME}_$(date +'%Y%m%d_%H%M%S').l
 # Start logging
 echo "Compression started at $(date +'%Y-%m-%d %H:%M:%S') on $SERVER_NAME" | tee "$LOG_FILE"
 
-# Compress each directory with maximum compression using xz
+# Compress each directory with maximum compression using xz and exclude specified directories
 for DIR in "${DIRECTORIES[@]}"; do
     BASENAME=$(basename "$DIR")
     COMPRESSED_FILE="$BACKUP_FOLDER/${SERVER_NAME}_${BACKUP_FILE_NAME}.tar.xz"
     echo "Compressing $DIR to $COMPRESSED_FILE" | tee -a "$LOG_FILE"
     
-    # Run the tar command to compress the directory
-    if tar -cJf "$COMPRESSED_FILE" -C "$(dirname "$DIR")" "$BASENAME" 2>> "$LOG_FILE"; then
+    # Build the exclude options for tar
+    EXCLUDE_OPTIONS=()
+    for EXCLUDE_DIR in "${EXCLUDE[@]}"; do
+        EXCLUDE_OPTIONS+=(--exclude="${EXCLUDE_DIR#/}")
+    done
+    
+    # Debugging output to check exclude options
+    echo "Exclude options: ${EXCLUDE_OPTIONS[@]}" | tee -a "$LOG_FILE"
+    
+    # Run the tar command to compress the directory with xz and exclude specified directories
+    if tar -cJvf "$COMPRESSED_FILE" "${EXCLUDE_OPTIONS[@]}" -C "$(dirname "$DIR")" "$BASENAME" 2>> "$LOG_FILE"; then
         echo "Successfully compressed $DIR" | tee -a "$LOG_FILE"
     else
         echo "Error compressing $DIR" | tee -a "$LOG_FILE"
