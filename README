@@ -120,6 +120,42 @@ This script calls the driver script with the default_directories.json configurat
 #More Options
 #/FilePort/Hangar/Scripts/FilePortATC.sh -c default_directories.json,default_directories2.json
 
+
+FlightPlans/ 
+Flight Plans are designed to be easily integrated with cron jobs, allowing for automated scheduling of tasks.
+
+Cryo-Flight340.sh
+=================
+Purpose: Long Term Storage
+
+Description:
+This script is designed to handle long-term storage tasks. It ensures that critical data is securely stored for extended periods, making it ideal for archiving and preserving important information.
+
+
+Program-Flight310.sh
+====================
+Purpose: Server Side Programs
+
+Description:
+This script manages server-side programs. It handles the backup and maintenance of server applications, ensuring that all necessary programs are up-to-date and functioning correctly.
+
+
+Service-Flight330.sh
+====================
+Purpose: Server Workloads
+
+Description:
+This script is responsible for managing server workloads. It ensures that all server operations and tasks are backed up and maintained efficiently, supporting the overall performance and reliability of the server.
+
+
+User-Flight320.sh
+=================
+Purpose: User Data
+
+Description:
+This script focuses on user data. It handles the backup and management of user-specific information, ensuring that personal data is securely stored and easily retrievable when needed.
+
+
 Notes
 
 - Ensure that jq is installed on your system to parse the JSON configuration files.
