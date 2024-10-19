@@ -1,9 +1,7 @@
 {
     "backup_file_name": "ServiceFlight",
     "directories": [
-        "/service/Nimbus/california/System",
-        "/service/Nimbus/california/Games",
-        "/service/Nimbus/california/Foundry",
-        "/storage/LosAngeles/Servers"
+        "/Path/To/Production_0",
+        "/Path/To/Production_1"
     ]
 }

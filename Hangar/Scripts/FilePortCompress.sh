@@ -44,7 +44,7 @@ mkdir -p "$BACKUP_FOLDER"
 mkdir -p "$LOG_FOLDER"
 
 # Log file with date and time
-LOG_FILE="$LOG_FOLDER/compression_${SERVER_NAME}_$(date +'%Y%m%d_%H%M%S').log"
+LOG_FILE="$LOG_FOLDER/${LOG_FILE_NAME}_${SERVER_NAME}_$(date +'%Y%m%d_%H%M%S').log"
 
 # Start logging
 echo "Compression started at $(date +'%Y-%m-%d %H:%M:%S') on $SERVER_NAME" | tee "$LOG_FILE"
@@ -52,7 +52,7 @@ echo "Compression started at $(date +'%Y-%m-%d %H:%M:%S') on $SERVER_NAME" | tee
 # Compress each directory with maximum compression using xz
 for DIR in "${DIRECTORIES[@]}"; do
     BASENAME=$(basename "$DIR")
-    COMPRESSED_FILE="$BACKUP_FOLDER/${BACKUP_FILE_NAME}.tar.xz"
+    COMPRESSED_FILE="$BACKUP_FOLDER/${SERVER_NAME}_${BACKUP_FILE_NAME}.tar.xz"
     echo "Compressing $DIR to $COMPRESSED_FILE" | tee -a "$LOG_FILE"
     
     # Run the tar command to compress the directory

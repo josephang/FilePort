@@ -1,7 +1,6 @@
 {
     "backup_file_name": "UserFlight",
     "directories": [
-        "/home",
-        "/storage/LosAngeles/Users"
+        "/home"
     ]
 }
