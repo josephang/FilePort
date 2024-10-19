@@ -56,16 +56,17 @@ for DIR in "${DIRECTORIES[@]}"; do
     COMPRESSED_FILE="$BACKUP_FOLDER/${SERVER_NAME}_${BACKUP_FILE_NAME}.tar.xz"
     echo "Compressing $DIR to $COMPRESSED_FILE" | tee -a "$LOG_FILE"
     
-    # Build the exclude options for tar
+    # Build the exclude options for tar and handle them as relative paths
     EXCLUDE_OPTIONS=()
     for EXCLUDE_DIR in "${EXCLUDE[@]}"; do
-        EXCLUDE_OPTIONS+=(--exclude="${EXCLUDE_DIR#/}")
+        RELATIVE_EXCLUDE_DIR="${EXCLUDE_DIR#/}"
+        EXCLUDE_OPTIONS+=(--exclude="$RELATIVE_EXCLUDE_DIR")
     done
     
     # Debugging output to check exclude options
     echo "Exclude options: ${EXCLUDE_OPTIONS[@]}" | tee -a "$LOG_FILE"
     
-    # Run the tar command to compress the directory with xz and exclude specified directories
+    # Run the tar command to compress the directory with xz and exclude specified directories using relative paths
     if tar -cJvf "$COMPRESSED_FILE" "${EXCLUDE_OPTIONS[@]}" -C "$(dirname "$DIR")" "$BASENAME" 2>> "$LOG_FILE"; then
         echo "Successfully compressed $DIR" | tee -a "$LOG_FILE"
     else
