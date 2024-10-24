@@ -1,5 +1,7 @@
+****---Main Scripts---*****
 
-FilePortATC.sh is a driver script that automates the process of running compression and cleanup scripts with different JSON configurations. The script scans the configs folder for all JSON files and allows specifying which config or configs to use via command line arguments.
+FilePortATC.sh is a driver script that automates the process of running compression and cleanup scripts with different JSON configurations. 
+The script scans the configs folder for all JSON files and allows specifying which config or configs to use via command line arguments.
 
 Usage
 
