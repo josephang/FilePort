@@ -1,6 +1,5 @@
 {
     "server_name": "FilePort-Server_0",
-    "backup_folder": "/FilePort/RunWay",
     "log_folder": "/FilePort/Hangar/Logs",
     "log_file_name": "FilePort-Server_0-Log",
     "log_keep_days": 1096

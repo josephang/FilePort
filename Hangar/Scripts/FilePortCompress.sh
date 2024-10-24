@@ -30,18 +30,18 @@ fi
 
 # Read the main configuration file
 SERVER_NAME=$(jq -r '.server_name' "$MAIN_CONFIG_FILE")
-BACKUP_FOLDER=$(jq -r '.backup_folder' "$MAIN_CONFIG_FILE")
 LOG_FOLDER=$(jq -r '.log_folder' "$MAIN_CONFIG_FILE")
 LOG_FILE_NAME=$(jq -r '.log_file_name' "$MAIN_CONFIG_FILE")
 LOG_KEEP_DAYS=$(jq -r '.log_keep_days' "$MAIN_CONFIG_FILE")
 
 # Read the directories configuration file
+RUNWAY_FOLDER=$(jq -r '.RunWay_Folder' "$DIRECTORIES_CONFIG_FILE")
 BACKUP_FILE_NAME=$(jq -r '.backup_file_name' "$DIRECTORIES_CONFIG_FILE")
 DIRECTORIES=($(jq -r '.directories[]' "$DIRECTORIES_CONFIG_FILE"))
 EXCLUDE=($(jq -r '.exclude[]' "$DIRECTORIES_CONFIG_FILE"))
 
-# Create backup and log folders if they don't exist
-mkdir -p "$BACKUP_FOLDER"
+# Create RunWay and log folders if they don't exist
+mkdir -p "$RUNWAY_FOLDER"
 mkdir -p "$LOG_FOLDER"
 
 # Log file with date and time
@@ -53,7 +53,7 @@ echo "Compression started at $(date +'%Y-%m-%d %H:%M:%S') on $SERVER_NAME" | tee
 # Compress each directory with maximum compression using xz and exclude specified directories
 for DIR in "${DIRECTORIES[@]}"; do
     BASENAME=$(basename "$DIR")
-    COMPRESSED_FILE="$BACKUP_FOLDER/${SERVER_NAME}_${BACKUP_FILE_NAME}.tar.xz"
+    COMPRESSED_FILE="$RUNWAY_FOLDER/${SERVER_NAME}_${BACKUP_FILE_NAME}.tar.xz"
     echo "Compressing $DIR to $COMPRESSED_FILE" | tee -a "$LOG_FILE"
     
     # Build the exclude options for tar and handle them as relative paths
