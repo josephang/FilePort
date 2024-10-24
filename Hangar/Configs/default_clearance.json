@@ -1,8 +1,8 @@
 {
     "local_user": "your_local_user",
+    "ssl_cert_path": "/path/to/your/cert",
     "remote_user": "your_remote_user",
     "remote_host": "your_remote_host",
-    "ssl_cert_path": "/path/to/your/cert",
     "port": 22,
     "directories": [
         {
