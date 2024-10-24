@@ -1,6 +1,3 @@
-FilePortATC.sh
-
-Overview
 
 FilePortATC.sh is a driver script that automates the process of running compression and cleanup scripts with different JSON configurations. The script scans the configs folder for all JSON files and allows specifying which config or configs to use via command line arguments.
 
@@ -11,79 +8,9 @@ Command Line Arguments
 - -a: Process all JSON configuration files in the configs folder.
 - -c: Process specified JSON configuration files (comma-separated).
 
-Examples
+FilePortTakeOff.sh is the driver script that uses rsync to perform incremental backups and upload them to a remote server.
 
-1. Process all JSON configuration files:
-
-    ./FilePortATC.sh -a
-
-2. Process specific JSON configuration files:
-
-    ./FilePortATC.sh -c directories_config1.json,directories_config2.json
-
-Configuration Files
-
-Main Configuration File
-
-The main JSON configuration file (main_config.json) should include the following fields:
-
-{
-    "server_name": "ServerName",
-    "backup_folder": "/FilePort/RunWay",
-    "log_folder": "/FilePort/Hangar/Logs",
-    "log_file_name": "DefaultName.log",
-    "log_keep_days": 1096
-}
-
-- server_name: The name of the server.
-- backup_folder: The directory where compressed files will be stored.
-- log_folder: The directory where log files will be stored.
-- log_file_name: The name of the log file.
-- log_keep_days: The number of days to keep log files.
-
-Directories Configuration File
-
-The directories JSON configuration file should include the following fields:
-
-{
-    "backup_file_name": "BackupFileName",
-    "directories": [
-        "/Path/To/Backup/Target_0",
-        "/Path/To/Backup/Target_1",
-        "/Path/To/Backup/Target_2"
-    ]
-}
-
-- backup_file_name: The name of the backup file (prepended with server_name).
-- directories: A list of directories to be compressed.
-
-Scripts
-
-FilePortCompress.sh
-
-This script compresses the specified directories and logs the process.
-
-Usage
-
-./FilePortCompress.sh <directories_config_file.json>
-
-FilePortCleanUp.sh
-
-This script cleans up old log files based on the retention period specified in the main JSON configuration file.
-
-Usage
-
-./FilePortCleanUp.sh <main_config_file.json> <log_file>
-
-FilePortATC.sh
-
-This driver script automates the process of running the compression and cleanup scripts with different JSON configurations.
-
-Usage
-
-./FilePortATC.sh [-a] [-c directories_config1.json,directories_config2.json,...]
-
-Example JSON Configuration Files
+****---Example JSON Configuration Files---****
 
 Main Configuration File (main_config.json)
 
@@ -95,7 +22,7 @@ Main Configuration File (main_config.json)
     "log_keep_days": 1096
 }
 
-Directories Configuration File (directories_config.json)
+Directories Configuration File (default_directories.json)
 
 {
     "backup_file_name": "BackupFileName",
@@ -106,64 +33,53 @@ Directories Configuration File (directories_config.json)
     ]
 }
 
-Example Script to Call the Driver Script
+Remote Server Configuration Fule (default_clearance.json
+
+{
+    "local_user": "your_local_user",
+    "remote_user": "your_remote_user",
+    "remote_host": "your_remote_host",
+    "ssl_cert_path": "/path/to/your/cert",
+    "port": 22,
+    "directories": [
+        {
+            "local": "/path/to/local/dir1",
+            "remote": "/path/to/remote/dir1"
+        },
+        {
+            "local": "/path/to/local/dir2",
+            "remote": "/path/to/remote/dir2"
+        }
+        // Add more directories as needed
+    ]
+}
+
+****---Example Flight Plan---****
 
 Flight101.sh
 
-This script calls the driver script with the default_directories.json configuration file.
-
 #!/bin/bash
+# Call Compression Script With default_directories.json
+# Specify Which Directories You Wish To Compress
+#If you do not need compression, you can comment this out
+/FilePort/Hangar/Scripts/FilePortATC.sh -c default_directories.json
 
-# Call the driver script with the default directories JSON configuration file
-/FilePort/Hangar/Configs/FilePortATC.sh -c default_directories.json
-
-#More Options
+# You Can Specify More Flight Plans Delimited By Commas
 #/FilePort/Hangar/Scripts/FilePortATC.sh -c default_directories.json,default_directories2.json
 
 
-FlightPlans/ 
-Flight Plans are designed to be easily integrated with cron jobs, allowing for automated scheduling of tasks.
+# Configure Remote Server With default_clearance.json
+# You can specify directories that do not need to be compressed, but still need to be synced here
+# You must also make sure that the config includes the directory of your compressed files for them to by synced
+/FilePort/Hangar/Scripts/FilePortTakeOff.sh default_clearance.json
 
-Cryo-Flight340.sh
-=================
-Purpose: Long Term Storage
+#After Making Sure This Works, Set This FlightPlan To Be Run By Cron
 
-Description:
-This script is designed to handle long-term storage tasks. It ensures that critical data is securely stored for extended periods, making it ideal for archiving and preserving important information.
-
-
-Program-Flight310.sh
-====================
-Purpose: Server Side Programs
-
-Description:
-This script manages server-side programs. It handles the backup and maintenance of server applications, ensuring that all necessary programs are up-to-date and functioning correctly.
-
-
-Service-Flight330.sh
-====================
-Purpose: Server Workloads
-
-Description:
-This script is responsible for managing server workloads. It ensures that all server operations and tasks are backed up and maintained efficiently, supporting the overall performance and reliability of the server.
-
-
-User-Flight320.sh
-=================
-Purpose: User Data
-
-Description:
-This script focuses on user data. It handles the backup and management of user-specific information, ensuring that personal data is securely stored and easily retrievable when needed.
-
-
-Notes
+****---Notes---****
 
 - Ensure that jq is installed on your system to parse the JSON configuration files.
 - Make sure the scripts are executable:
 
-    chmod +x /FilePort/Hangar/Scripts/FilePortCompress.sh
-    chmod +x /FilePort/Hangar/Scripts/FilePortCleanUp.sh
-    chmod +x /FilePort/Hangar/Configs/FilePortATC.sh
-    chmod +x /FilePort/Hangar/Configs/Flight101.sh
+    chmod +x /FlightPlan101.sh
 
 - Run the driver script with the appropriate command line arguments to process the configurations.
