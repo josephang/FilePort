@@ -7,8 +7,8 @@
         "/usr",
         "/home"
     ],
-//Exclusions are relative paths
+//Exclusions are relative paths on all directories
     "exclude": [
-        "/home/temp"
+        "temp"
     ]
 }

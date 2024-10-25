@@ -38,9 +38,15 @@ LOG_KEEP_DAYS=$(jq -r '.log_keep_days' "$MAIN_CONFIG_FILE")
 RUNWAY_FOLDER=$(jq -r '.RunWay_Folder' "$DIRECTORIES_CONFIG_FILE")
 BACKUP_FILE_NAME=$(jq -r '.backup_file_name' "$DIRECTORIES_CONFIG_FILE")
 DIRECTORIES=($(jq -r '.directories[]' "$DIRECTORIES_CONFIG_FILE"))
-EXCLUDE=($(jq -r '.exclude[]' "$DIRECTORIES_CONFIG_FILE"))
 ENCRYPTION_ENABLED=$(jq -r '.encryption_enabled' "$DIRECTORIES_CONFIG_FILE")
 ENCRYPTION_KEY=$(jq -r '.encryption_key' "$DIRECTORIES_CONFIG_FILE")
+
+# Check if the exclude field exists and read it if it does
+if jq -e '.exclude' "$DIRECTORIES_CONFIG_FILE" > /dev/null; then
+    EXCLUDE=($(jq -r '.exclude[]' "$DIRECTORIES_CONFIG_FILE"))
+else
+    EXCLUDE=()
+fi
 
 # Create RunWay and log folders if they don't exist
 mkdir -p "$RUNWAY_FOLDER"
@@ -55,8 +61,7 @@ echo "Compression started at $(date +'%Y-%m-%d %H:%M:%S') on $SERVER_NAME" | tee
 # Compress and encrypt each directory
 for DIR in "${DIRECTORIES[@]}"; do
     BASENAME=$(basename "$DIR")
-    COMPRESSED_FILE="$RUNWAY_FOLDER/${SERVER_NAME}_${BACKUP_FILE_NAME}_${BASENAME}.tar.xz"
-    ENCRYPTED_FILE="${COMPRESSED_FILE}.gpg"
+    ENCRYPTED_FILE="$RUNWAY_FOLDER/${SERVER_NAME}_${BACKUP_FILE_NAME}_${BASENAME}.tar.xz.gpg"
     
     echo "Compressing and encrypting $DIR to $ENCRYPTED_FILE" | tee -a "$LOG_FILE"
     
