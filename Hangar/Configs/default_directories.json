@@ -1,10 +1,13 @@
 {
     "RunWay_Folder": "/FilePort/RunWay",
     "backup_file_name": "FilePort-Default-Backup",
+    "encryption_enabled": "no",
+    "encryption_key": "your_long_encryption_key_here",
     "directories": [
         "/usr",
         "/home"
     ],
+//Exclusions are relative paths
     "exclude": [
         "/home/temp"
     ]
