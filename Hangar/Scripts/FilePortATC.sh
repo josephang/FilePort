@@ -1,8 +1,31 @@
 #!/bin/bash
 
+# Usage: ./FilePortATC.sh [-a] [-c config1.json,config2.json,...]
+#  -a  Process all JSON configuration files in the configs folder
+#  -c  Process specified JSON configuration files (comma-separated)
+
 # Directory paths
 SCRIPT_DIR="/FilePort/Hangar/Scripts"
 CONFIG_DIR="/FilePort/Hangar/Configs"
+MAIN_CONFIG_FILE="/FilePort/Hangar/Configs/main_config.json"
+
+# Check if jq is installed
+if ! command -v jq &> /dev/null
+then
+    echo "jq could not be found. Please install jq to proceed."
+    exit 1
+fi
+
+# Check if the main configuration file exists
+if [ ! -f "$MAIN_CONFIG_FILE" ]; then
+    echo "Main configuration file not found: $MAIN_CONFIG_FILE"
+    exit 1
+fi
+
+# Read the main configuration file
+LOG_FOLDER=$(jq -r '.log_folder' "$MAIN_CONFIG_FILE")
+LOG_FILE_NAME=$(jq -r '.log_file_name' "$MAIN_CONFIG_FILE")
+LOG_FILE="$LOG_FOLDER/$LOG_FILE_NAME"
 
 # Function to display usage
 usage() {
@@ -10,6 +33,13 @@ usage() {
     echo "  -a  Process all JSON configuration files in the configs folder"
     echo "  -c  Process specified JSON configuration files (comma-separated)"
     exit 1
+}
+
+# Logging function
+log_message() {
+    local level=$1
+    local message=$2
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $level - $message" >> "$LOG_FILE"
 }
 
 # Parse command line arguments
@@ -44,13 +74,14 @@ fi
 for CONFIG_FILE in "${CONFIG_FILES[@]}"; do
     FULL_PATH="$CONFIG_DIR/$CONFIG_FILE"
     if [ ! -f "$FULL_PATH" ]; then
-        echo "Directories configuration file not found: $FULL_PATH"
+        log_message "ERROR" "Directories configuration file not found: $FULL_PATH"
         continue
     fi
-    echo "Processing configuration: $FULL_PATH"
-    
+    log_message "INFO" "Processing configuration: $FULL_PATH"
+
     # Call the compression script
     "$SCRIPT_DIR/FilePortCompress.sh" "$FULL_PATH"
+    log_message "INFO" "Completed processing configuration: $FULL_PATH"
 done
 
-echo "All configurations processed."
+log_message "INFO" "All configurations processed."

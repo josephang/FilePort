@@ -14,5 +14,5 @@
         "admin@example.com",
         "support@example.com"
     ],
-    "mc_setup": "no"
+    "mc_setup": "yes"
 }

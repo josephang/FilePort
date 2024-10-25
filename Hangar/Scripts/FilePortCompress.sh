@@ -34,57 +34,63 @@ LOG_FOLDER=$(jq -r '.log_folder' "$MAIN_CONFIG_FILE")
 LOG_FILE_NAME=$(jq -r '.log_file_name' "$MAIN_CONFIG_FILE")
 LOG_KEEP_DAYS=$(jq -r '.log_keep_days' "$MAIN_CONFIG_FILE")
 
+# Logging function
+log_message() {
+    local level=$1
+    local message=$2
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $level - $message" >> "$LOG_FOLDER/$LOG_FILE_NAME"
+}
+
 # Read the directories configuration file
 RUNWAY_FOLDER=$(jq -r '.RunWay_Folder' "$DIRECTORIES_CONFIG_FILE")
 BACKUP_FILE_NAME=$(jq -r '.backup_file_name' "$DIRECTORIES_CONFIG_FILE")
-DIRECTORIES=($(jq -r '.directories[]' "$DIRECTORIES_CONFIG_FILE"))
+DIRECTORIES=$(jq -c '.directories[]' "$DIRECTORIES_CONFIG_FILE")
 ENCRYPTION_ENABLED=$(jq -r '.encryption_enabled' "$DIRECTORIES_CONFIG_FILE")
 ENCRYPTION_KEY=$(jq -r '.encryption_key' "$DIRECTORIES_CONFIG_FILE")
-
-# Check if the exclude field exists and read it if it does
-if jq -e '.exclude' "$DIRECTORIES_CONFIG_FILE" > /dev/null; then
-    EXCLUDE=($(jq -r '.exclude[]' "$DIRECTORIES_CONFIG_FILE"))
-else
-    EXCLUDE=()
-fi
 
 # Create RunWay and log folders if they don't exist
 mkdir -p "$RUNWAY_FOLDER"
 mkdir -p "$LOG_FOLDER"
 
-# Log file with date and time
-LOG_FILE="$LOG_FOLDER/${LOG_FILE_NAME}_${SERVER_NAME}_$(date +'%Y%m%d_%H%M%S').log"
-
 # Start logging
-echo "Compression started at $(date +'%Y-%m-%d %H:%M:%S') on $SERVER_NAME" | tee "$LOG_FILE"
+log_message "INFO" "Compression started at $(date +'%Y-%m-%d %H:%M:%S') on $SERVER_NAME"
+log_message "DEBUG" "RunWay folder: $RUNWAY_FOLDER"
+log_message "DEBUG" "Backup file name: $BACKUP_FILE_NAME"
+log_message "DEBUG" "Encryption enabled: $ENCRYPTION_ENABLED"
 
 # Compress and encrypt each directory
-for DIR in "${DIRECTORIES[@]}"; do
+for DIR_ENTRY in $DIRECTORIES; do
+    DIR=$(echo "$DIR_ENTRY" | jq -r '.path')
+    EXCLUDES=$(echo "$DIR_ENTRY" | jq -r '.exclude[]')
+    
     BASENAME=$(basename "$DIR")
     ENCRYPTED_FILE="$RUNWAY_FOLDER/${SERVER_NAME}_${BACKUP_FILE_NAME}_${BASENAME}.tar.xz.gpg"
     
-    echo "Compressing and encrypting $DIR to $ENCRYPTED_FILE" | tee -a "$LOG_FILE"
+    log_message "INFO" "Compressing and encrypting $DIR to $ENCRYPTED_FILE"
+    log_message "DEBUG" "Directory path: $DIR"
+    log_message "DEBUG" "Excludes: $EXCLUDES"
     
     # Build the exclude options for tar and handle them as relative paths
     EXCLUDE_OPTIONS=()
-    for EXCLUDE_DIR in "${EXCLUDE[@]}"; do
+    for EXCLUDE_DIR in $EXCLUDES; do
         RELATIVE_EXCLUDE_DIR="${EXCLUDE_DIR#/}"
-        EXCLUDE_OPTIONS+=(--exclude="$RELATIVE_EXCLUDE_DIR")
+        EXCLUDE_OPTIONS+=(--exclude="$DIR/$RELATIVE_EXCLUDE_DIR")
     done
     
     # Debugging output to check exclude options
-    echo "Exclude options: ${EXCLUDE_OPTIONS[@]}" | tee -a "$LOG_FILE"
+    log_message "DEBUG" "Exclude options: ${EXCLUDE_OPTIONS[@]}"
     
     # Compress and encrypt the directory
     if tar -cf - "${EXCLUDE_OPTIONS[@]}" -C "$(dirname "$DIR")" "$BASENAME" | xz | gpg --batch --yes --passphrase "$ENCRYPTION_KEY" -c -o "$ENCRYPTED_FILE"; then
-        echo "Successfully compressed and encrypted $DIR" | tee -a "$LOG_FILE"
+        log_message "INFO" "Successfully compressed and encrypted $DIR"
     else
-        echo "Error compressing and encrypting $DIR" | tee -a "$LOG_FILE"
+        log_message "ERROR" "Error compressing and encrypting $DIR"
     fi
 done
 
 # Call the cleanup script
+log_message "INFO" "Calling cleanup script"
 /FilePort/Hangar/Scripts/FilePortCleanUp.sh "$MAIN_CONFIG_FILE" "$LOG_FILE"
 
 # End logging
-echo "Compression completed at $(date +'%Y-%m-%d %H:%M:%S') on $SERVER_NAME" | tee -a "$LOG_FILE"
+log_message "INFO" "Compression completed at $(date +'%Y-%m-%d %H:%M:%S') on $SERVER_NAME"
