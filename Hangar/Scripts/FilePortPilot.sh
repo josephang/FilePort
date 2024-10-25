@@ -31,4 +31,4 @@ else
 fi
 
 # Perform the rsync with hard links for incremental backup on the remote server using the specified SSL certificate
-rsync -avz -e "ssh -i $SSL_CERT_PATH -p $PORT" --delete $LINK_DEST_OPTION $SOURCE $REMOTE_USER@$REMOTE_HOST:$DESTINATION
+rsync -avz -e "ssh -i $SSL_CERT_PATH -p $PORT" --delete $LINK_DEST_OPTION "$SOURCE/" "$REMOTE_USER@$REMOTE_HOST:$DESTINATION"
