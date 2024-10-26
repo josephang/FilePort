@@ -13,29 +13,50 @@ if [ $(jq -r '.Flight_Ready' $main_config) == "yes" ]; then
 fi
 
 if [ $(jq -r '.mc_setup' $main_config) == "no" ]; then
-    # Prompt user for main config data
-    echo "Enter root directory:"
+    # Prompt user for main config data with default options
+    echo "Enter root directory (default: /default/root/dir):"
     read root_dir
-    echo "Enter server name:"
+    root_dir=${root_dir:-/default/root/dir}
+
+    echo "Enter server name (default: default_server):"
     read server_name
-    echo "Enter log file path:"
+    server_name=${server_name:-default_server}
+
+    echo "Enter log file path (default: FilePort/Hangar/Logs/Fileport.log):"
     read log_file_path
-    echo "Enter log level (e.g., INFO, DEBUG):"
+    log_file_path=${log_file_path:-FilePort/Hangar/Logs/Fileport.log}
+
+    echo "Enter log level (default: INFO):"
     read log_level
-    echo "Enter retry attempts:"
+    log_level=${log_level:-INFO}
+
+    echo "Enter retry attempts (default: 3):"
     read retry_attempts
-    echo "Enter SMTP server:"
+    retry_attempts=${retry_attempts:-3}
+
+    echo "Enter SMTP server (default: smtp.default.com):"
     read smtp_server
-    echo "Enter SMTP port:"
+    smtp_server=${smtp_server:-smtp.default.com}
+
+    echo "Enter SMTP port (default: 587):"
     read smtp_port
-    echo "Enter SMTP user:"
+    smtp_port=${smtp_port:-587}
+
+    echo "Enter SMTP user (default: default_user):"
     read smtp_user
-    echo "Enter SMTP password:"
+    smtp_user=${smtp_user:-default_user}
+
+    echo "Enter SMTP password (default: default_password):"
     read smtp_password
-    echo "Enter SMTP from address:"
+    smtp_password=${smtp_password:-default_password}
+
+    echo "Enter SMTP from address (default: default@default.com):"
     read smtp_from
-    echo "Enter SMTP to addresses (comma-separated):"
+    smtp_from=${smtp_from:-default@default.com}
+
+    echo "Enter SMTP to addresses (comma-separated, default: default@default.com):"
     read smtp_to
+    smtp_to=${smtp_to:-default@default.com}
 
     # Setup main config with user-provided data
     jq --arg root_dir "$root_dir" \

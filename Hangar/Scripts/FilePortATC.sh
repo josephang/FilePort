@@ -25,7 +25,7 @@ if [ -n "$uploadconfigpath" ]; then
     for dir in $directories; do
         local=$(echo $dir | jq -r '.local')
         remote=$(echo $dir | jq -r '.remote')
-        "$root_dir/FilePort/Hangar/Scripts/FilePortUpload.sh" -l $local -u $remote -i $(jq -r '.local_user' $uploadconfigpath) -s $(jq -r '.ssl_cert_path' $uploadconfigpath) -r $(jq -r '.remote_user' $uploadconfigpath) -h $(jq -r '.remote_host' $uploadconfigpath) -p $(jq -r '.port' $uploadconfigpath)
+        "$root_dir/FilePort/Hangar/Scripts/FilePortUpload.sh" -l $local -u $remote -i $(jq -r '.local_user' $uploadconfigpath) -s $(jq -r '.ssl_cert_path' $uploadconfigpath) -r $(jq -r '.remote_user' $uploadconfigpath) -h $(jq -r '.remote_host' $uploadconfigpath) -p $(jq -r '.port' $uploadconfigpath) -m $mainconfigpath
     done
 fi
 
