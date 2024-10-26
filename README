@@ -5,7 +5,7 @@
 	- `jq` handles the JSON directories.
 	- `xz` handles compression.
 	- `openssl` handles encryption.
-	- `rsync` handles the remote upload.
+	- `rsync` handles incremental backup & remote upload.
 	- `cron` can be used to automate backups.
 
 ***...Quick Start Guide...***
