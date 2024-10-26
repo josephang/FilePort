@@ -14,39 +14,47 @@ fi
 
 root_dir=$(jq -r '.root_dir' $main_config)
 
-echo "Enter Flight Number:"
+echo "Enter Flight Number (e.g., 123):"
 read FlightNumber
 
-echo "Do you want compression? (yes/no)"
+echo "Do you want compression? (yes/no) [default: no]:"
 read compression
+compression=${compression:-no}
 
 if [ "$compression" == "yes" ]; then
     compress_config="$root_dir/FilePort/Hangar/Configs/FlightPlan_${FlightNumber}_comp.json"
     cp "$root_dir/FilePort/Hangar/Configs/FlightPlan_template_comp.json" $compress_config
 
-    echo "Enter compression folder path:"
+    echo "Enter compression folder path [default: /default/compression/folder]:"
     read compression_folder
-    echo "Enter job name:"
+    compression_folder=${compression_folder:-/default/compression/folder}
+    echo "Enter job name [default: Default-Job]:"
     read job_name
-    echo "Enable encryption? (yes/no):"
+    job_name=${job_name:-Default-Job}
+    echo "Enable encryption? (yes/no) [default: yes]:"
     read encryption_enabled
+    encryption_enabled=${encryption_enabled:-yes}
     if [ "$encryption_enabled" == "yes" ]; then
-        echo "Enter encryption key:"
+        echo "Enter encryption key [default: default_encryption_key]:"
         read encryption_key
+        encryption_key=${encryption_key:-default_encryption_key}
     else
         encryption_key=""
     fi
 
     directories=()
     while true; do
-        echo "Enter directory path to compress:"
+        echo "Enter directory path to compress [default: /default/path1]:"
         read dir_path
-        echo "Enter directories to exclude (comma-separated):"
+        dir_path=${dir_path:-/default/path1}
+        echo "Enter directories to exclude (comma-separated) [default: /default/exclude1]:"
         read exclude_dirs
+        exclude_dirs=${exclude_dirs:-/default/exclude1}
         directories+=("{\"path\":\"$dir_path\",\"exclude\":[$(echo $exclude_dirs | jq -R 'split(",") | map("\"" + . + "\"") | join(",")')]}")
-        
-        echo "Do you want to add another directory? (yes/no)"
+
+        echo "Do you want to add another directory? (yes/no) [default: no]:"
         read add_another
+        add_another=${add_another:-no}
         if [ "$add_another" != "yes" ]; then
             break
         fi
@@ -66,27 +74,35 @@ if [ "$compression" == "yes" ]; then
         .directories = $directories' $compress_config > tmp.$$.json && mv tmp.$$.json $compress_config
 fi
 
-echo "Do you want to upload to remote server? (yes/no)"
+echo "Do you want to upload to remote server? (yes/no) [default: no]:"
 read upload
+upload=${upload:-no}
 
 if [ "$upload" == "yes" ]; then
     upload_config="$root_dir/FilePort/Hangar/Configs/FlightPlan_${FlightNumber}_uplo.json"
     cp "$root_dir/FilePort/Hangar/Configs/FlightPlan_template_clear.json" $upload_config
 
-    echo "Enter local user:"
+    echo "Enter local user [default: default_user]:"
     read local_user
-    echo "Enter SSL certificate path:"
+    local_user=${local_user:-default_user}
+    echo "Enter SSL certificate path [default: /default/path/to/ssl_cert]:"
     read ssl_cert_path
-    echo "Enter remote user:"
+    ssl_cert_path=${ssl_cert_path:-/default/path/to/ssl_cert}
+    echo "Enter remote user [default: default_remote_user]:"
     read remote_user
-    echo "Enter remote host:"
+    remote_user=${remote_user:-default_remote_user}
+    echo "Enter remote host [default: default.remote.host]:"
     read remote_host
-    echo "Enter port:"
+    remote_host=${remote_host:-default.remote.host}
+    echo "Enter port [default: 22]:"
     read port
-    echo "Enter local directory path:"
+    port=${port:-22}
+    echo "Enter local directory path [default: /default/local/path]:"
     read local_dir
-    echo "Enter remote directory path:"
+    local_dir=${local_dir:-/default/local/path}
+    echo "Enter remote directory path [default: /default/remote/path]:"
     read remote_dir
+    remote_dir=${remote_dir:-/default/remote/path}
 
     jq --arg local_user "$local_user" \
        --arg ssl_cert_path "$ssl_cert_path" \
