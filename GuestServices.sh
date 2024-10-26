@@ -1,6 +1,6 @@
 #!/bin/bash
 
-main_config="FilePort/Hangar/Configs/main_config.json"
+main_config="/home/josephang/FilePort/Hangar/Configs/main_config.json"
 
 if [ ! -f "$main_config" ]; then
     echo "Main config file not found. Please configure in GuestServices.sh - Exiting."
@@ -26,7 +26,7 @@ read compression
 compression=${compression:-no}
 
 if [ "$compression" == "yes" ]; then
-    compress_config="$flight_config_dir/_${FlightNumber}_comp.json"
+    compress_config="$flight_config_dir/FlightPlan_${FlightNumber}_comp.json"
     cp "$root_dir/FilePort/Hangar/Configs/FlightPlan_template_comp.json" $compress_config
 
     echo "Enter target storage file path. Save compressed file to [default: /target/storage/folder]:"
@@ -83,7 +83,7 @@ read upload
 upload=${upload:-no}
 
 if [ "$upload" == "yes" ]; then
-    upload_config="$flight_config_dir/_${FlightNumber}_clear.json"
+    upload_config="$flight_config_dir/FlightPlan_${FlightNumber}_clear.json"
     cp "$root_dir/FilePort/Hangar/Configs/FlightPlan_template_clear.json" $upload_config
 
     echo "Enter local user [default: default_user]:"
@@ -124,7 +124,11 @@ if [ "$upload" == "yes" ]; then
         .directories[0].remote = $remote_dir' $upload_config > tmp.$$.json && mv tmp.$$.json $upload_config
 fi
 
-flight_plan="$root_dir/FilePort/FlightPlans/FlightPlan-${FlightNumber}.sh"
+# Create directory for the flight plan if it doesn't exist
+flight_plan_dir="$root_dir/FilePort/FlightPlans/${FlightNumber}"
+mkdir -p "$flight_plan_dir"
+
+flight_plan="$flight_plan_dir/FlightPlan-${FlightNumber}.sh"
 echo "$root_dir/FilePort/Hangar/Scripts/FilePortATC.sh -m $main_config -c $compress_config -u $upload_config > $root_dir/FilePort/Hangar/Logs/FilePort.log 2>&1" > $flight_plan
 chmod +x $flight_plan
 
