@@ -3,22 +3,22 @@
 main_config="FilePort/Hangar/Configs/main_config.json"
 
 if [ ! -f "$main_config" ]; then
-    echo "Main config file not found. Exiting."
+    echo "Main config file not found. Please configure in FlightReady.sh - Exiting."
     exit 1
 fi
 
 if [ $(jq -r '.Flight_Ready' $main_config) == "yes" ]; then
-    echo "System is already Flight Ready. Exiting."
+    echo "System is already Flight Ready. Run ./GuestServices.sh to create a FlightPlan. - Exiting."
     exit 1
 fi
 
 if [ $(jq -r '.mc_setup' $main_config) == "no" ]; then
     # Prompt user for main config data with default options
-    echo "Enter root directory of FilePort (default: /default/root/dir):"
+    echo "Enter the root_dir or folder FilePort is in. (default: /this/path/to/FilePort):"
     read root_dir
     root_dir=${root_dir:-/default/root/dir}
 
-    echo "Enter server name (default: default_server):"
+    echo "Enter your server name (default: default_server):"
     read server_name
     server_name=${server_name:-default_server}
 
@@ -26,7 +26,7 @@ if [ $(jq -r '.mc_setup' $main_config) == "no" ]; then
     read retry_attempts
     retry_attempts=${retry_attempts:-3}
 
-    echo "Enter SMTP server (default: smtp.default.com):"
+    echo "Enter SMTP server (default: smtp.default.net):"
     read smtp_server
     smtp_server=${smtp_server:-smtp.default.com}
 
@@ -96,7 +96,7 @@ for config in "${configs[@]}"; do
 done
 
 # Check for dependencies
-dependencies=("jq" "xz" "mail" "rsync" "openssl")
+dependencies=("jq" "xz" "mail" "rsync" "openssl" "cron")
 for dep in "${dependencies[@]}"; do
     if command -v $dep &> /dev/null; then
         echo "$dep is installed"
@@ -106,4 +106,4 @@ for dep in "${dependencies[@]}"; do
 done
 
 jq '.Flight_Ready = "yes"' $main_config > tmp.$$.json && mv tmp.$$.json $main_config
-echo "System is Flight Ready"
+echo "System is Flight Ready. Run ./GuestServices.sh to create a FlightPlan."

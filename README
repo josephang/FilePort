@@ -1,87 +1,43 @@
-****---Main Scripts---*****
+***...FilePort Summary...***
 
-FilePortATC.sh is a driver script that automates the process of running compression and cleanup scripts with different JSON configurations. 
-The script scans the configs folder for all JSON files and allows specifying which config or configs to use via command line arguments.
+	FilePort is a bash backup solution leveraging `jq`, `xz`, `openssl`, `rsync`, and `cron`.
 
-Usage
+	- `jq` handles the JSON directories.
+	- `xz` handles compression.
+	- `openssl` handles encryption.
+	- `rsync` handles the remote upload.
+	- `cron` can be used to automate backups.
 
-Command Line Arguments
+***...Quick Start Guide...***
 
-- -a: Process all JSON configuration files in the configs folder.
-- -c: Process specified JSON configuration files (comma-separated).
+	1. Configure main_config in FlightReady.sh
+	2. Run ./FlightReady.sh to configure main_config.json
+	3. Install dependencies if needed
+	4. Configure main_config in GuestServices.sh
+	5. Run ./GuestServices.sh to create a FlightPlan
 
-FilePortTakeOff.sh is the driver script that uses rsync to perform incremental backups and upload them to a remote server.
+***...Automations...***
 
-****---Example JSON Configuration Files---****
+	Fleet Configurations and CronJobs
+	You can create Fleet Configurations by creating a bash script with multiple Flight Plans
+	
+***...Example FleetConfiguration.sh...***
 
-Main Configuration File (main_config.json)
+	#!/bin/bash
 
-{
-    "server_name": "ServerName",
-    "log_folder": "/FilePort/Hangar/Logs",
-    "log_file_name": "DefaultName.log",
-    "log_keep_days": 1096
-}
+	# Execute the flight plan scripts
+	/FilePort/FlightPlans/FlightPlan-101.sh
+	/FilePort/FlightPlans/FlightPlan-404.sh
+	/FilePort/FlightPlans/FlightPlan-Service.sh
 
-Directories Configuration File (default_directories.json)
+	#Upgrade
+	apt-get update && apt-get upgrade -y 
 
-{
-    "RunWay_Folder": "/FilePort/RunWay",
-    "backup_file_name": "BackupFileName",
-    "directories": [
-        "/Path/To/Backup/Target_0",
-        "/Path/To/Backup/Target_1",
-        "/Path/To/Backup/Target_2"
-    ]
-}
+	#Reboot
+	reboot
 
-Remote Server Rsync Configuration File (default_clearance.json)
+***...Example crontab...***
 
-{
-    "local_user": "your_local_user",
-    "ssl_cert_path": "/path/to/your/cert",
-    "remote_user": "your_remote_user",
-    "remote_host": "your_remote_host",
-    "port": 22,
-    "directories": [
-        {
-            "local": "/path/to/local/dir1",
-            "remote": "/path/to/remote/dir1"
-        },
-        {
-            "local": "/path/to/local/dir2",
-            "remote": "/path/to/remote/dir2"
-        }
-        // Add more directories as needed
-    ]
-}
+	0 0 * * 2 /FilePort/CronJobs/FleetConfiguration.sh > /FilePort/Hangar/Logs/FleetConfiguration.log 2>&1
 
-****---Example Flight Plan---****
-
-Flight101.sh
-
-#!/bin/bash
-# Call Compression Script With default_directories.json
-# Specify Which Directories You Wish To Compress
-#If you do not need compression, you can comment this out
-/FilePort/Hangar/Scripts/FilePortATC.sh -c default_directories.json
-
-# You Can Specify More Flight Plans Delimited By Commas
-#/FilePort/Hangar/Scripts/FilePortATC.sh -c default_directories.json,default_directories2.json
-
-
-# Configure Remote Server With default_clearance.json
-# You can specify directories that do not need to be compressed, but still need to be synced here
-# You must also make sure that the config includes the directory of your compressed files for them to by synced
-/FilePort/Hangar/Scripts/FilePortTakeOff.sh default_clearance.json
-
-#After Making Sure This Works, Set This FlightPlan To Be Run By Cron
-
-****---Notes---****
-
-- Ensure that jq is installed on your system to parse the JSON configuration files.
-- Make sure the scripts are executable:
-
-    chmod +x /FlightPlan101.sh
-
-- Run the driver script with the appropriate command line arguments to process the configurations.
+***...End...***
