@@ -1,6 +1,6 @@
 #!/bin/bash
 
-main_config="/home/josephang/FilePort/Hangar/Configs/main_config.json"
+main_config="FilePort/Hangar/Configs/main_config.json"
 
 if [ ! -f "$main_config" ]; then
     echo "Main config file not found. Please configure in GuestServices.sh - Exiting."
