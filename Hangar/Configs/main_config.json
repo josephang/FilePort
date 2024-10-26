@@ -1,8 +1,6 @@
 {
  "server_name": "default_server",
  "root_dir": "/default/root/dir",
- "log_file_path": "FilePort/Hangar/Logs/Fileport.log",
- "log_level": "INFO",
  "retry_attempts": 3,
  "smtp_server": "smtp.default.com",
  "smtp_port": 587,

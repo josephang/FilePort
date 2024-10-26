@@ -22,14 +22,6 @@ if [ $(jq -r '.mc_setup' $main_config) == "no" ]; then
     read server_name
     server_name=${server_name:-default_server}
 
-    echo "Enter log file path (default: FilePort/Hangar/Logs/Fileport.log):"
-    read log_file_path
-    log_file_path=${log_file_path:-FilePort/Hangar/Logs/Fileport.log}
-
-    echo "Enter log level (default: INFO):"
-    read log_level
-    log_level=${log_level:-INFO}
-
     echo "Enter retry attempts (default: 3):"
     read retry_attempts
     retry_attempts=${retry_attempts:-3}
