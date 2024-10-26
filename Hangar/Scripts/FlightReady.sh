@@ -14,7 +14,7 @@ fi
 
 if [ $(jq -r '.mc_setup' $main_config) == "no" ]; then
     # Prompt user for main config data with default options
-    echo "Enter root directory (default: /default/root/dir):"
+    echo "Enter root directory of FilePort (default: /default/root/dir):"
     read root_dir
     root_dir=${root_dir:-/default/root/dir}
 
@@ -34,11 +34,11 @@ if [ $(jq -r '.mc_setup' $main_config) == "no" ]; then
     read smtp_port
     smtp_port=${smtp_port:-587}
 
-    echo "Enter SMTP user (default: default_user):"
+    echo "Enter SMTP user (default: apikey):"
     read smtp_user
     smtp_user=${smtp_user:-default_user}
 
-    echo "Enter SMTP password (default: default_password):"
+    echo "Enter SMTP password (default: secret):"
     read smtp_password
     smtp_password=${smtp_password:-default_password}
 

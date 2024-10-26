@@ -25,7 +25,7 @@ if [ "$compression" == "yes" ]; then
     compress_config="$root_dir/FilePort/Hangar/Configs/FlightPlan_${FlightNumber}_comp.json"
     cp "$root_dir/FilePort/Hangar/Configs/FlightPlan_template_comp.json" $compress_config
 
-    echo "Enter compression folder path [default: /default/compression/folder]:"
+    echo "Enter compression target folder path [default: /default/compression/folder]:"
     read compression_folder
     compression_folder=${compression_folder:-/default/compression/folder}
     echo "Enter job name [default: Default-Job]:"
@@ -79,7 +79,7 @@ read upload
 upload=${upload:-no}
 
 if [ "$upload" == "yes" ]; then
-    upload_config="$root_dir/FilePort/Hangar/Configs/FlightPlan_${FlightNumber}_uplo.json"
+    upload_config="$root_dir/FilePort/Hangar/Configs/FlightPlan_${FlightNumber}_clear.json"
     cp "$root_dir/FilePort/Hangar/Configs/FlightPlan_template_clear.json" $upload_config
 
     echo "Enter local user [default: default_user]:"
