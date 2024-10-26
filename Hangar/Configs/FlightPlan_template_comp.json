@@ -1,0 +1,18 @@
+{
+ "compression_Folder": "/default/compression/folder",
+ "job_name": "Default-Job",
+ "encryption_enabled": "yes",
+ "encryption_key": "default_encryption_key",
+ "directories": [
+   {
+     "path": "/default/path1",
+     "exclude": [
+       "/default/exclude1"
+     ]
+   },
+   {
+     "path": "/default/path2",
+     "exclude": []
+   }
+ ]
+}

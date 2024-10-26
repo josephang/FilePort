@@ -1,18 +1,15 @@
 {
-    "server_name": "MyServer",
-    "log_folder": "/FilePort/Hangar/Logs",
-    "log_file_name": "FilePort.log",
-    "log_keep_days": 1095,
-    "log_level": "INFO",
-    "retry_attempts": 3,
-    "smtp_server": "smtp.example.com",
-    "smtp_port": 587,
-    "smtp_user": "user@example.com",
-    "smtp_password": "password",
-    "smtp_from": "noreply@example.com",
-    "smtp_to": [
-        "admin@example.com",
-        "support@example.com"
-    ],
-    "mc_setup": "no"
+ "server_name": "default_server",
+ "root_dir": "/default/root/dir",
+ "log_file_path": "FilePort/Hangar/Logs/Fileport.log",
+ "log_level": "INFO",
+ "retry_attempts": 3,
+ "smtp_server": "smtp.default.com",
+ "smtp_port": 587,
+ "smtp_user": "default_user",
+ "smtp_password": "default_password",
+ "smtp_from": "default@default.com",
+ "smtp_to": ["default@default.com"],
+ "mc_setup": "no",
+ "Flight_Ready": "no"
 }
