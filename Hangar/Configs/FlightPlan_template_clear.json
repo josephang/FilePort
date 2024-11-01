@@ -4,7 +4,7 @@
  "remote_user": "default_remote_user",
  "remote_host": "default.remote.host",
  "port": 22,
- "bwlimit": 1831,
+ "bwlimit": 0,
  "directories": [
    {
      "local": "/default/local/path",
