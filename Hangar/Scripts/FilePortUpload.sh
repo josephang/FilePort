@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while getopts l:u:i:s:r:h:p:m: flag
+while getopts l:u:i:s:r:h:p:b:m: flag
 do
     case "${flag}" in
         l) localdir=${OPTARG};;
@@ -10,6 +10,7 @@ do
         r) remoteuser=${OPTARG};;
         h) remotehost=${OPTARG};;
         p) port=${OPTARG};;
+        b) bwlimit=${OPTARG};;
         m) mainconfigpath=${OPTARG};;
     esac
 done
@@ -20,7 +21,7 @@ success=false
 
 while [ $attempt -lt $retry_attempts ]; do
     echo "Uploading $localdir to $remotehost:$remotedir (Attempt $((attempt+1))/$retry_attempts)"
-    rsync -avz -e "ssh -i $sslcert -p $port" --exclude '*/.*' $localdir $remoteuser@$remotehost:$remotedir
+    rsync -avz --partial --progress --bwlimit=$bwlimit -e "ssh -i $sslcert -p $port" --exclude '*/.*' $localdir $remoteuser@$remotehost:$remotedir
     if [ $? -eq 0 ]; then
         success=true
         break

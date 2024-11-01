@@ -1,11 +1,12 @@
 #!/bin/bash
 
-while getopts m:c:u: flag
+while getopts m:c:u:b: flag
 do
     case "${flag}" in
         m) mainconfigpath=${OPTARG};;
         c) compressconfigpath=${OPTARG};;
         u) uploadconfigpath=${OPTARG};;
+        b) bwlimit=${OPTARG};;
     esac
 done
 
@@ -25,7 +26,7 @@ if [ -n "$uploadconfigpath" ]; then
     for dir in $directories; do
         local=$(echo $dir | jq -r '.local')
         remote=$(echo $dir | jq -r '.remote')
-        "$root_dir/FilePort/Hangar/Scripts/FilePortUpload.sh" -l $local -u $remote -i $(jq -r '.local_user' $uploadconfigpath) -s $(jq -r '.ssl_cert_path' $uploadconfigpath) -r $(jq -r '.remote_user' $uploadconfigpath) -h $(jq -r '.remote_host' $uploadconfigpath) -p $(jq -r '.port' $uploadconfigpath) -m $mainconfigpath > $root_dir/FilePort/Hangar/Logs/FilePort.log 2>&1
+        "$root_dir/FilePort/Hangar/Scripts/FilePortUpload.sh" -l $local -u $remote -i $(jq -r '.local_user' $uploadconfigpath) -s $(jq -r '.ssl_cert_path' $uploadconfigpath) -r $(jq -r '.remote_user' $uploadconfigpath) -h $(jq -r '.remote_host' $uploadconfigpath) -p $(jq -r '.port' $uploadconfigpath) -m $mainconfigpath -b $bwlimit > $root_dir/FilePort/Hangar/Logs/FilePort.log 2>&1
     done
 fi
 

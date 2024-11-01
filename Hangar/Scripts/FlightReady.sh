@@ -1,60 +1,76 @@
 #!/bin/bash
 
-main_config="FilePort/Hangar/Configs/main_config.json"
+while getopts r: flag
+do
+    case "${flag}" in
+        r) root_dir=${OPTARG};;
+    esac
+done
+
+main_config="$root_dir/FilePort/Hangar/Configs/main_config.json"
 
 if [ ! -f "$main_config" ]; then
-    echo "Main config file not found. Please configure in FlightReady.sh - Exiting."
+    echo "Main config file not found in FlightReady.sh. Please configure in GuestServices.sh - Exiting."
     exit 1
 fi
 
 if [ $(jq -r '.Flight_Ready' $main_config) == "yes" ]; then
-    echo "System is already Flight Ready. Run ./GuestServices.sh to create a FlightPlan. - Exiting."
+    echo "System is already Flight Ready. Run /GuestServices.sh ->"
     exit 1
 fi
 
 if [ $(jq -r '.mc_setup' $main_config) == "no" ]; then
-    # Prompt user for main config data with default options
-    echo "Enter the root_dir or folder FilePort is in. (default: /this/path/to/FilePort):"
+    # Read existing values from the JSON file
+    existing_root_dir=$(jq -r '.root_dir' $main_config)
+    existing_server_name=$(jq -r '.server_name' $main_config)
+    existing_retry_attempts=$(jq -r '.retry_attempts' $main_config)
+    existing_smtp_server=$(jq -r '.smtp_server' $main_config)
+    existing_smtp_port=$(jq -r '.smtp_port' $main_config)
+    existing_smtp_user=$(jq -r '.smtp_user' $main_config)
+    existing_smtp_password=$(jq -r '.smtp_password' $main_config)
+    existing_smtp_from=$(jq -r '.smtp_from' $main_config)
+    existing_smtp_to=$(jq -r '.smtp_to | join(",")' $main_config)
+
+    # Prompt user for main config data with existing values as defaults
+    echo "Enter the root_dir or folder FilePort is in. (default: $existing_root_dir):"
     read root_dir
-    root_dir=${root_dir:-/default/root/dir}
+    root_dir=${root_dir:-$existing_root_dir}
 
-    echo "Enter your server name (default: default_server):"
+    echo "Enter your server name (default: $existing_server_name):"
     read server_name
-    server_name=${server_name:-default_server}
+    server_name=${server_name:-$existing_server_name}
 
-    echo "Enter retry attempts (default: 3):"
+    echo "Enter retry attempts (default: $existing_retry_attempts):"
     read retry_attempts
-    retry_attempts=${retry_attempts:-3}
+    retry_attempts=${retry_attempts:-$existing_retry_attempts}
 
-    echo "Enter SMTP server (default: smtp.default.net):"
+    echo "Enter SMTP server (default: $existing_smtp_server):"
     read smtp_server
-    smtp_server=${smtp_server:-smtp.default.com}
+    smtp_server=${smtp_server:-$existing_smtp_server}
 
-    echo "Enter SMTP port (default: 587):"
+    echo "Enter SMTP port (default: $existing_smtp_port):"
     read smtp_port
-    smtp_port=${smtp_port:-587}
+    smtp_port=${smtp_port:-$existing_smtp_port}
 
-    echo "Enter SMTP user (default: apikey):"
+    echo "Enter SMTP user (default: $existing_smtp_user):"
     read smtp_user
-    smtp_user=${smtp_user:-default_user}
+    smtp_user=${smtp_user:-$existing_smtp_user}
 
-    echo "Enter SMTP password (default: secret):"
+    echo "Enter SMTP password (default: $existing_smtp_password):"
     read smtp_password
-    smtp_password=${smtp_password:-default_password}
+    smtp_password=${smtp_password:-$existing_smtp_password}
 
-    echo "Enter SMTP from address (default: default@default.com):"
+    echo "Enter SMTP from address (default: $existing_smtp_from):"
     read smtp_from
-    smtp_from=${smtp_from:-default@default.com}
+    smtp_from=${smtp_from:-$existing_smtp_from}
 
-    echo "Enter SMTP to addresses (comma-separated, default: default@default.com):"
+    echo "Enter SMTP to addresses (comma-separated, default: $existing_smtp_to):"
     read smtp_to
-    smtp_to=${smtp_to:-default@default.com}
+    smtp_to=${smtp_to:-$existing_smtp_to}
 
-    # Setup main config with user-provided data
+    # Setup main config with user-provided data or existing values
     jq --arg root_dir "$root_dir" \
        --arg server_name "$server_name" \
-       --arg log_file_path "$log_file_path" \
-       --arg log_level "$log_level" \
        --argjson retry_attempts "$retry_attempts" \
        --arg smtp_server "$smtp_server" \
        --argjson smtp_port "$smtp_port" \
@@ -64,8 +80,6 @@ if [ $(jq -r '.mc_setup' $main_config) == "no" ]; then
        --argjson smtp_to "$(echo $smtp_to | jq -R 'split(",")')" \
        '.root_dir = $root_dir |
         .server_name = $server_name |
-        .log_file_path = $log_file_path |
-        .log_level = $log_level |
         .retry_attempts = $retry_attempts |
         .smtp_server = $smtp_server |
         .smtp_port = $smtp_port |
@@ -77,7 +91,6 @@ if [ $(jq -r '.mc_setup' $main_config) == "no" ]; then
 fi
 
 # Check scripts and configs
-root_dir=$(jq -r '.root_dir' $main_config)
 scripts=("FilePortATC.sh" "FilePortCompress.sh" "FilePortUpload.sh")
 configs=("FlightPlan_template_comp.json" "FlightPlan_template_clear.json" "main_config.json")
 
@@ -106,4 +119,4 @@ for dep in "${dependencies[@]}"; do
 done
 
 jq '.Flight_Ready = "yes"' $main_config > tmp.$$.json && mv tmp.$$.json $main_config
-echo "System is Flight Ready. Run ./GuestServices.sh to create a FlightPlan."
+echo "System is Flight Ready. Run /GuestServices.sh ->"

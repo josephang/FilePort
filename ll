@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the root directory variable at the top for easy access
-root_dir="/home/azureuser"
+root_dir="/path/to/FilePort"
 
 # Define the main configuration file path
 main_config="$root_dir/FilePort/Hangar/Configs/main_config.json"
